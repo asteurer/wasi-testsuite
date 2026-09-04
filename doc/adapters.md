@@ -13,8 +13,9 @@ The WASI test runner includes adapters for
 [pywasm](https://github.com/mohanson/pywasm),
 [wamr](https://groups.google.com/g/wamr-dev),
 [wasmedge](https://wasmedge.org), [wasmtime](https://wasmtime.dev),
-[wazero](https://wazero.io), and
-[wizard](https://github.com/titzer/wizard-engine/).  Contributions of
+[wazero](https://wazero.io),
+[wizard](https://github.com/titzer/wizard-engine/), and
+[zwasm](https://github.com/zwasm/zwasm).  Contributions of
 adapters for other runtimes are welcome.
 
 ## Writing your own adapter
