@@ -24,7 +24,7 @@ The adapter is a python file that the test runner will load as a module.
 To create a new adapter, we recommend you take a look at
 [`adapters/wasmtime.py`](../adapters/wasmtime.py).  As you can see,
 currently we require that the module define `get_name`, `get_version`,
-and `compute_argv` functions.
+`get_wasi_versions`, `get_wasi_worlds`, and `compute_argv` functions.
 
 We encourage you to submit your adapter upstream: it's not much code and
 probably we can manage to make changes to it if test runner internals
