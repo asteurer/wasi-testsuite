@@ -1,3 +1,8 @@
+# --- Temp Env for Running the wasi-testsuite on Wago ---
+# To run, navigate to the root of the repo and run the following commands:
+#
+# docker build -f Dockerfile.wago -t wago-test:latest . && docker run --rm wago-test:latest
+
 # python:3.12 (run-tests uses pathlib features that need Python >= 3.12); bookworm
 # base keeps glibc compatible with the wago installer and Go toolchain.
 FROM python:3.12-slim-bookworm
@@ -7,7 +12,6 @@ RUN curl -fsSL https://install.wago.sh/unix | sh
 ENV PATH="/usr/local/go/bin:${PATH}"
 ENV PATH="/root/.wago/bin:${PATH}"
 RUN wago version switch beta --no-input
-RUN wago add wago-org/wasi/p1 --no-input --allow-all --accept-contracts
 
 # Test base: the prod/testsuite-base branch ships precompiled test binaries and a
 # test-runner matching the current module-adapter format.
@@ -20,7 +24,8 @@ COPY adapters/wago.py /suite/adapters/wago.py
 COPY tools/wago-runner /suite/tools/wago-runner
 COPY expectations/wago /suite/expectations/wago
 
-# Build the helper (embeds the wago runtime + wago-org/wasi/p1 host functions).
+# Build the helper (embeds the wago runtime + wago-org/wasi p1/p2 host functions
+# and the component-model plugin).
 RUN cd /suite/tools/wago-runner && go mod tidy && go build -o /usr/local/bin/wago-runner .
 
 # Test-runner Python dependencies.
@@ -29,6 +34,7 @@ RUN pip3 install --break-system-packages -r /suite/test-runner/requirements.txt
 ENV WAGO_RUNNER=/usr/local/bin/wago-runner
 WORKDIR /suite
 
-# Phase 1: run the wasm32-wasip1 suites against wago.
+# Run the wasm32-wasip1 (Preview 1) and wasm32-wasip3 (via the Preview 2 host)
+# suites against wago.
 CMD ["./run-tests", "--runtime", "adapters/wago.py", \
      "--expectations", "expectations/wago/linux.toml", "--verbose"]

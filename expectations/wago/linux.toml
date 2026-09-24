@@ -6,6 +6,6 @@ name = "WASI Rust tests [wasm32-wasip1]"
 # wago's wago-org/wasi/p1 returns EEXIST when renaming onto a non-empty
 # directory, but WASI requires EACCES or ENOTEMPTY. Tracked as a wago conformance
 # gap; remove this once wago-org/wasi fixes path_rename.
-# [[suite.test]]
-# name = "path_rename"
-# expected = "fail"
+[[suite.test]]
+name = "path_rename"
+expected = "fail"

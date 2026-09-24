@@ -8,10 +8,17 @@ WAGO = shlex.split(os.getenv("WAGO", "wago"), posix=os.name != "nt")
 
 # The wago CLI (`wago run`) exposes no per-invocation flags for environment
 # variables or preopened directories, so tests are executed through a small Go
-# helper that embeds the wago runtime and the wago-org/wasi/p1 host functions
+# helper that embeds the wago runtime and the wago-org/wasi host functions
 # (see tools/wago-runner). Override its path/command with WAGO_RUNNER.
 WAGO_RUNNER = shlex.split(os.getenv("WAGO_RUNNER", "wago-runner"),
                           posix=os.name != "nt")
+
+# Map a wasi-testsuite version to the wago-runner host bundle. The wasm32-wasip3
+# suite is run through the Preview 2 component host (wago-org/wasi/p2) for now.
+_WASI_MODE = {
+    "wasm32-wasip1": "p1",
+    "wasm32-wasip3": "p2",
+}
 
 
 def get_name() -> str:
@@ -35,13 +42,11 @@ def get_version() -> str:
 
 
 def get_wasi_versions() -> List[str]:
-    # Preview 1 only for now; Preview 3 is a later phase (needs p3 support in
-    # wago-org/wasi + wago-org/component-model).
-    return ["wasm32-wasip1"]
+    return ["wasm32-wasip1", "wasm32-wasip3"]
 
 
 def get_wasi_worlds() -> List[str]:
-    return ["wasi:cli/command"]
+    return ["wasi:cli/command", "wasi:http/service"]
 
 
 def compute_argv(test_path: str,
@@ -53,6 +58,7 @@ def compute_argv(test_path: str,
     args, env, root = args_env_root
 
     argv = list(WAGO_RUNNER)
+    argv += ["--wasi", _WASI_MODE.get(wasi_version, "p1")]
 
     for k, v in env.items():
         argv += ["--env", f"{k}={v}"]
